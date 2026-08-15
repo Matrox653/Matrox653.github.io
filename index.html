@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +14,12 @@
     --ink: #e7ecf3;
     --ink-dim: #8fa1b8;
     --ink-faint: #56667e;
-    --accent-add: #3fd9b6;     /* "insertion" teal-green */
-    --accent-change: #f2b705;  /* "modified" amber */
-    --accent-remove: #ef6f6c;  /* "deletion" coral */
+    --accent-add: #3fd9b6;
+    --accent-change: #f2b705;
+    --accent-remove: #ef6f6c;
     --mono: 'JetBrains Mono', monospace;
     --sans: 'Inter', sans-serif;
-    --radius: 6px;
+    --radius: 8px;
   }
 
   * { box-sizing: border-box; }
@@ -37,197 +37,171 @@
     color: var(--ink);
     font-family: var(--sans);
     line-height: 1.5;
+    position: relative;
+    overflow-x: hidden;
   }
+
+  /* ---------- mouse-follow ambient glow ---------- */
+  #cursor-glow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(600px circle at var(--gx, 50%) var(--gy, 30%),
+      rgba(63, 217, 182, 0.14), rgba(242, 183, 5, 0.06) 35%, transparent 65%);
+    transition: background-position .05s linear;
+  }
+  main, .tabbar, footer { position: relative; z-index: 2; }
+
+  /* ---------- spotlight text (hover reveal, base always legible) ---------- */
+  .spotlight { position: relative; display: inline-block; }
+  .spotlight .base { color: inherit; }
+  .spotlight .glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(120px circle at var(--mx,50%) var(--my,50%),
+      var(--accent-add) 0%, var(--accent-change) 45%, transparent 75%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    opacity: 0; transition: opacity .25s ease;
+    pointer-events: none;
+  }
+  .spotlight:hover .glow { opacity: 1; }
 
   /* ---------- top tab bar ---------- */
   .tabbar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    background: var(--bg-elevated);
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 2px;
+    background: rgba(18, 26, 40, 0.85);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--panel-border);
-    padding: 0 12px;
-    height: 44px;
-    overflow-x: auto;
+    padding: 0 12px; height: 44px; overflow-x: auto;
   }
   .tab {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--ink-dim);
-    padding: 10px 16px;
-    border-right: 1px solid var(--panel-border);
-    white-space: nowrap;
-    cursor: pointer;
-    text-decoration: none;
+    font-family: var(--mono); font-size: 13px; color: var(--ink-dim);
+    padding: 10px 16px; border-right: 1px solid var(--panel-border);
+    white-space: nowrap; cursor: pointer; text-decoration: none;
     transition: color .15s ease, background .15s ease;
   }
-  .tab:hover { color: var(--ink); background: rgba(255,255,255,0.03); }
+  .tab:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
   .tab.active { color: var(--accent-change); border-bottom: 2px solid var(--accent-change); }
   .tab .dot { color: var(--accent-add); margin-right: 6px; }
 
-  main { max-width: 880px; margin: 0 auto; padding: 0 24px; }
-  section { padding: 96px 0 48px; scroll-margin-top: 60px; }
+  main { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 100px 0 48px; scroll-margin-top: 60px; }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
 
   /* ---------- hero ---------- */
-  .hero { padding-top: 120px; }
-  .prompt-line {
-    font-family: var(--mono);
-    font-size: 14px;
-    color: var(--accent-add);
-    margin-bottom: 18px;
-  }
+  .hero { padding-top: 130px; display: flex; gap: 40px; align-items: center; flex-wrap: wrap; }
+  .hero-text { flex: 1 1 380px; min-width: 280px; }
+  .prompt-line { font-family: var(--mono); font-size: 14px; color: var(--accent-add); margin-bottom: 18px; }
   .prompt-line .path { color: var(--ink-faint); }
   .prompt-line .cursor {
-    display: inline-block;
-    width: 8px; height: 16px;
-    background: var(--accent-change);
-    margin-left: 4px;
-    vertical-align: middle;
-    animation: blink 1s steps(1) infinite;
+    display: inline-block; width: 8px; height: 16px; background: var(--accent-change);
+    margin-left: 4px; vertical-align: middle; animation: blink 1s steps(1) infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
 
   h1.headline {
-    font-family: var(--mono);
-    font-size: clamp(32px, 6vw, 56px);
-    font-weight: 800;
-    margin: 0 0 20px;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-family: var(--mono); font-size: clamp(30px, 5.2vw, 52px); font-weight: 800;
+    margin: 0 0 20px; letter-spacing: -0.02em; line-height: 1.12;
   }
-  h1.headline .glyph { color: var(--accent-add); }
+  h1.headline .accent-word { color: var(--accent-add); }
 
-  .hero-sub {
-    font-size: 17px;
-    color: var(--ink-dim);
-    max-width: 560px;
-    margin: 0 0 32px;
-  }
+  .hero-sub { font-size: 17px; color: var(--ink-dim); max-width: 520px; margin: 0 0 32px; }
   .hero-sub strong { color: var(--ink); font-weight: 600; }
 
   .hero-links { display: flex; gap: 12px; flex-wrap: wrap; }
   .btn {
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 10px 18px;
-    border-radius: var(--radius);
-    text-decoration: none;
-    border: 1px solid var(--panel-border);
-    color: var(--ink);
-    transition: border-color .15s ease, transform .1s ease;
+    font-family: var(--mono); font-size: 13px; padding: 10px 18px; border-radius: var(--radius);
+    text-decoration: none; border: 1px solid var(--panel-border); color: var(--ink);
+    transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .btn:hover { border-color: var(--accent-add); transform: translateY(-1px); }
+  .btn:hover { border-color: var(--accent-add); transform: translateY(-2px); box-shadow: 0 6px 20px -8px var(--accent-add); }
   .btn.primary { background: var(--accent-add); color: #06231c; border-color: var(--accent-add); font-weight: 600; }
   .btn.primary:hover { background: #57e6c6; }
 
-  /* ---------- section headers ---------- */
-  .sec-label {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
+  /* ---------- avatar / image placeholder ---------- */
+  .avatar-slot {
+    flex: 0 0 auto; width: 180px; height: 180px; border-radius: 50%;
+    border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
+    background: var(--bg-elevated); transition: border-color .2s ease, transform .3s ease;
+    overflow: hidden;
   }
-  h2.sec-title {
-    font-family: var(--mono);
-    font-size: 26px;
-    font-weight: 700;
-    margin: 0 0 28px;
-  }
+  .avatar-slot:hover { border-color: var(--accent-add); transform: scale(1.03); }
+  .avatar-slot img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  /* Your photo goes here. Replace the <span> inside .avatar-slot with:
+     <img src="images/your-photo.jpg" alt="Your name"> */
 
-  /* ---------- about: code comment block ---------- */
+  .img-placeholder {
+    width: 100%; aspect-ratio: 16/9; border-radius: var(--radius);
+    border: 2px dashed var(--panel-border); background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
+    margin-bottom: 14px; transition: border-color .2s ease;
+  }
+  .img-placeholder:hover { border-color: var(--accent-change); }
+  /* Replace this div's content with:
+     <img src="images/project-1.png" alt="Project screenshot" style="width:100%;border-radius:8px;"> */
+
+  /* ---------- section headers ---------- */
+  .sec-label { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+  h2.sec-title { font-family: var(--mono); font-size: 26px; font-weight: 700; margin: 0 0 28px; }
+
+  /* ---------- about ---------- */
   .comment-block {
-    font-family: var(--mono);
-    font-size: 14.5px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius);
-    padding: 24px 28px;
-    color: var(--ink-dim);
+    font-family: var(--mono); font-size: 14.5px; background: var(--bg-elevated);
+    border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 24px 28px; color: var(--ink-dim);
   }
   .comment-block .cm { color: var(--ink-faint); }
   .comment-block p { margin: 0 0 12px; }
   .comment-block p:last-child { margin-bottom: 0; }
   .comment-block b { color: var(--ink); font-weight: 600; }
 
-  /* ---------- skills: diff bars ---------- */
-  .skills-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 32px;
+  /* ---------- expertise: categorized tags ---------- */
+  .cat-group { margin-bottom: 28px; }
+  .cat-group:last-child { margin-bottom: 0; }
+  .cat-title { font-family: var(--mono); font-size: 13px; color: var(--accent-change); margin-bottom: 12px; letter-spacing: 0.04em; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag {
+    font-family: var(--mono); font-size: 13px; padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--panel-border); background: var(--bg-elevated); color: var(--ink-dim);
+    transition: color .2s ease, border-color .2s ease, transform .2s ease;
   }
-  @media (max-width: 620px) { .skills-grid { grid-template-columns: 1fr; } }
-  .skill-row { font-family: var(--mono); font-size: 13.5px; }
-  .skill-row .top { display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .skill-row .name { color: var(--ink); }
-  .skill-row .pct { color: var(--ink-faint); }
-  .skill-track {
-    height: 6px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--panel-border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .skill-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-add), var(--accent-change));
-    width: 0%;
-    transition: width 1.1s cubic-bezier(.2,.8,.2,1);
-  }
+  .tag:hover { color: var(--ink); border-color: var(--accent-add); transform: translateY(-2px); }
 
-  /* ---------- projects: commit log ---------- */
+  /* ---------- projects: filters + commit log ---------- */
+  .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+  .filter-btn {
+    font-family: var(--mono); font-size: 12.5px; padding: 8px 16px; border-radius: 999px;
+    border: 1px solid var(--panel-border); background: transparent; color: var(--ink-dim); cursor: pointer;
+    transition: all .2s ease;
+  }
+  .filter-btn:hover { color: var(--ink); border-color: var(--accent-add); }
+  .filter-btn.active { background: var(--accent-add); color: #06231c; border-color: var(--accent-add); font-weight: 600; }
+
   .commit {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 20px;
-    padding: 20px 0;
-    border-top: 1px solid var(--panel-border);
+    display: grid; grid-template-columns: 90px 1fr; gap: 20px; padding: 24px 0;
+    border-top: 1px solid var(--panel-border); transition: opacity .3s ease, transform .3s ease;
   }
   .commit:last-child { border-bottom: 1px solid var(--panel-border); }
-  .commit .hash {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent-change);
-    padding-top: 2px;
-  }
-  .commit .msg {
-    font-family: var(--mono);
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    color: var(--ink);
-  }
+  .commit.hidden { display: none; }
+  .commit .hash { font-family: var(--mono); font-size: 13px; color: var(--accent-change); padding-top: 2px; }
+  .commit .msg { font-family: var(--mono); font-size: 16px; font-weight: 600; margin: 0 0 8px; color: var(--ink); }
   .commit .desc { font-size: 14.5px; color: var(--ink-dim); margin: 0 0 12px; max-width: 560px; }
   .commit .stack { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
   .chip {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    padding: 3px 9px;
-    border-radius: 4px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--panel-border);
-    color: var(--ink-dim);
+    font-family: var(--mono); font-size: 11.5px; padding: 3px 9px; border-radius: 4px;
+    background: var(--bg-elevated); border: 1px solid var(--panel-border); color: var(--ink-dim);
   }
-  .commit .link {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent-add);
-    text-decoration: none;
-  }
+  .commit .link { font-family: var(--mono); font-size: 13px; color: var(--accent-add); text-decoration: none; }
   .commit .link:hover { text-decoration: underline; }
 
-  /* ---------- contact: terminal prompt ---------- */
+  /* ---------- contact ---------- */
   .terminal {
-    font-family: var(--mono);
-    font-size: 14px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius);
-    padding: 22px 26px;
+    font-family: var(--mono); font-size: 14px; background: var(--bg-elevated);
+    border: 1px solid var(--panel-border); border-radius: var(--radius); padding: 22px 26px;
   }
   .terminal .line { margin-bottom: 10px; }
   .terminal .line:last-child { margin-bottom: 0; }
@@ -236,25 +210,27 @@
   .terminal a:hover { text-decoration: underline; }
   .terminal .k { color: var(--ink-faint); }
 
-  footer {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink-faint);
-    text-align: center;
-    padding: 40px 0 60px;
-  }
+  footer { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); text-align: center; padding: 40px 0 60px; }
 
   @media (prefers-reduced-motion: reduce) {
     .cursor { animation: none; }
-    .skill-fill { transition: none; }
+    #cursor-glow { display: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  @media (max-width: 620px) {
+    .hero { flex-direction: column-reverse; text-align: center; }
+    .hero-links { justify-content: center; }
   }
 </style>
 </head>
 <body>
 
+<div id="cursor-glow"></div>
+
 <nav class="tabbar">
   <a href="#about" class="tab"><span class="dot">●</span>about.md</a>
-  <a href="#skills" class="tab"><span class="dot">●</span>skills.json</a>
+  <a href="#expertise" class="tab"><span class="dot">●</span>expertise.json</a>
   <a href="#projects" class="tab"><span class="dot">●</span>projects.log</a>
   <a href="#contact" class="tab"><span class="dot">●</span>contact.sh</a>
 </nav>
@@ -262,125 +238,178 @@
 <main>
 
   <section class="hero" id="top">
-    <div class="prompt-line"><span class="path">~/portfolio</span> $ whoami<span class="cursor"></span></div>
-    <h1 class="headline">Hi,<span class="glyph">Matrox</span>.</h1>here
-    <p class="hero-sub">Programista zajmujący się <strong>tworzeniem stron i aplikacji</strong>. Lubię ogarniać rzeczy od backendu po ostatni piksel na froncie.</p>
-    <div class="hero-links">
-      <a class="btn primary" href="#projects">Zobacz projekty →</a>
-      <a class="btn" href="https://github.com/Matrox653" target="_blank" rel="noopener">GitHub ↗</a>
-      <a class="btn" href="#contact">Napisz do mnie</a>
+    <div class="hero-text">
+      <div class="prompt-line"><span class="path">~/portfolio</span> $ whoami<span class="cursor"></span></div>
+      <h1 class="headline">
+        Hi, I'm
+        <span class="spotlight accent-word">
+          <span class="base">Matrox653</span><span class="glow" aria-hidden="true">Matrox653</span>
+        </span>.
+      </h1>
+      <p class="hero-sub">A <strong>software developer</strong> who likes building things end to end — from backend logic to the last pixel on the screen.</p>
+      <div class="hero-links">
+        <a class="btn primary" href="#projects">View projects →</a>
+        <a class="btn" href="https://github.com/Matrox653" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+
+    <!-- Your photo goes here. Replace the <span> below with:
+         <img src="images/your-photo.jpg" alt="Your name"> -->
+    <div class="avatar-slot">
+      <span>add<br>your photo</span>
     </div>
   </section>
 
-  <section id="about">
+  <section id="about" class="reveal">
     <div class="sec-label">01</div>
-    <h2 class="sec-title">// about</h2>
+    <h2 class="sec-title spotlight"><span class="base">// about</span><span class="glow" aria-hidden="true">// about</span></h2>
     <div class="comment-block">
       <p><span class="cm">/**</span></p>
-      <p><b>Kim jestem:</b> Uczę się i tworzę projekty programistyczne — od małych skryptów po pełne strony internetowe.</p>
-      <p><b>Czym się interesuję:</b> web development, automatyzacja, majsterkowanie z nowymi technologiami.</p>
-      <p><b>Cel:</b> rozwijać się jako programista i budować rzeczy, z których jestem dumny.</p>
+      <p><b>Who I am:</b> I learn and build programming projects — from small scripts to full websites.</p>
+      <p><b>What I'm into:</b> web development, automation, tinkering with new tech.</p>
+      <p><b>Goal:</b> keep growing as a developer and ship things I'm proud of.</p>
       <p><span class="cm">*/</span></p>
     </div>
   </section>
 
-  <section id="skills">
+  <section id="expertise" class="reveal">
     <div class="sec-label">02</div>
-    <h2 class="sec-title">// skills</h2>
-    <div class="skills-grid">
-      <div class="skill-row">
-        <div class="top"><span class="name">HTML / CSS</span><span class="pct">80%</span></div>
-        <div class="skill-track"><div class="skill-fill" data-w="80"></div></div>
+    <h2 class="sec-title spotlight"><span class="base">// expertise</span><span class="glow" aria-hidden="true">// expertise</span></h2>
+
+    <div class="cat-group">
+      <div class="cat-title">Languages</div>
+      <div class="tag-row">
+        <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Python</span>
       </div>
-      <div class="skill-row">
-        <div class="top"><span class="name">JavaScript</span><span class="pct">65%</span></div>
-        <div class="skill-track"><div class="skill-fill" data-w="65"></div></div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title">Tools & Workflow</div>
+      <div class="tag-row">
+        <span class="tag">Git / GitHub</span><span class="tag">VS Code</span><span class="tag">Command line</span>
       </div>
-      <div class="skill-row">
-        <div class="top"><span class="name">Python</span><span class="pct">60%</span></div>
-        <div class="skill-track"><div class="skill-fill" data-w="60"></div></div>
-      </div>
-      <div class="skill-row">
-        <div class="top"><span class="name">Git / GitHub</span><span class="pct">70%</span></div>
-        <div class="skill-track"><div class="skill-fill" data-w="70"></div></div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title">Currently learning</div>
+      <div class="tag-row">
+        <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">APIs</span>
       </div>
     </div>
   </section>
 
-  <section id="projects">
+  <section id="projects" class="reveal">
     <div class="sec-label">03</div>
-    <h2 class="sec-title">// projects</h2>
+    <h2 class="sec-title spotlight"><span class="base">// projects</span><span class="glow" aria-hidden="true">// projects</span></h2>
 
-    <div class="commit">
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="web">Web</button>
+      <button class="filter-btn" data-filter="scripts">Scripts</button>
+      <button class="filter-btn" data-filter="tools">Tools</button>
+    </div>
+
+    <div class="commit" data-category="web">
       <div class="hash">a963e61</div>
       <div>
-        <p class="msg">To portfolio</p>
-        <p class="desc">Strona wizytówka zbudowana i wdrożona przez GitHub Pages — ten sam projekt, który właśnie oglądasz.</p>
+        <!-- Screenshot slot — replace with:
+             <img src="images/project-1.png" alt="Project screenshot" style="width:100%;border-radius:8px;"> -->
+        <div class="img-placeholder"><span>add a screenshot</span></div>
+        <p class="msg">This portfolio</p>
+        <p class="desc">The personal site you're looking at right now — built and deployed with GitHub Pages.</p>
         <div class="stack"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JS</span></div>
-        <a class="link" href="https://github.com/Matrox653/Matrox653.github.io" target="_blank" rel="noopener">zobacz kod →</a>
+        <a class="link" href="https://github.com/Matrox653/Matrox653.github.io" target="_blank" rel="noopener">view code →</a>
       </div>
     </div>
 
-    <div class="commit">
+    <div class="commit" data-category="scripts">
       <div class="hash">4f21c0d</div>
       <div>
-        <p class="msg">Projekt #2 — podmień mnie</p>
-        <p class="desc">Opisz tutaj swój kolejny projekt: co robi, jaki problem rozwiązuje i czego się przy nim nauczyłeś.</p>
+        <div class="img-placeholder"><span>add a screenshot</span></div>
+        <p class="msg">Project #2 — replace me</p>
+        <p class="desc">Describe your next project here: what it does, what problem it solves, and what you learned building it.</p>
         <div class="stack"><span class="chip">tech</span><span class="chip">stack</span></div>
-        <a class="link" href="#" target="_blank" rel="noopener">zobacz kod →</a>
+        <a class="link" href="#" target="_blank" rel="noopener">view code →</a>
       </div>
     </div>
 
-    <div class="commit">
+    <div class="commit" data-category="tools">
       <div class="hash">8b7ae12</div>
       <div>
-        <p class="msg">Projekt #3 — podmień mnie</p>
-        <p class="desc">Kolejny slot na projekt. Możesz dodać dowolną liczbę takich bloków, kopiując strukturę .commit.</p>
+        <div class="img-placeholder"><span>add a screenshot</span></div>
+        <p class="msg">Project #3 — replace me</p>
+        <p class="desc">Another project slot. Copy the whole .commit block to add more, and set data-category to "web", "scripts" or "tools".</p>
         <div class="stack"><span class="chip">tech</span><span class="chip">stack</span></div>
-        <a class="link" href="#" target="_blank" rel="noopener">zobacz kod →</a>
+        <a class="link" href="#" target="_blank" rel="noopener">view code →</a>
       </div>
     </div>
   </section>
 
-  <section id="contact">
+  <section id="contact" class="reveal">
     <div class="sec-label">04</div>
-    <h2 class="sec-title">// contact</h2>
+    <h2 class="sec-title spotlight"><span class="base">// contact</span><span class="glow" aria-hidden="true">// contact</span></h2>
     <div class="terminal">
-      <div class="line"><span class="k">~$</span> contact <span class="flag">--email</span> <a href="mailto:twoj@email.com">twoj@email.com</a></div>
+      <div class="line"><span class="k">~$</span> contact <span class="flag">--email</span> <a href="mailto:your@email.com">your@email.com</a></div>
       <div class="line"><span class="k">~$</span> contact <span class="flag">--github</span> <a href="https://github.com/Matrox653" target="_blank" rel="noopener">github.com/Matrox653</a></div>
-      <div class="line"><span class="k">~$</span> contact <span class="flag">--status</span> <span style="color:var(--accent-add)">otwarty na propozycje ✓</span></div>
+      <div class="line"><span class="k">~$</span> contact <span class="flag">--status</span> <span style="color:var(--accent-add)">open to opportunities ✓</span></div>
     </div>
   </section>
 
 </main>
 
-<footer>© 2026 Matrox653 — zbudowane z HTML, CSS i uporem</footer>
+<footer>© 2026 Matrox653 — built with HTML, CSS and stubbornness</footer>
 
 <script>
-  // Aktywna zakładka na podstawie sekcji w widoku
+  // Active tab based on scroll position
   const tabs = document.querySelectorAll('.tab');
   const sections = document.querySelectorAll('main section[id]');
   const setActive = () => {
     let current = sections[0].id;
-    sections.forEach(sec => {
-      if (window.scrollY >= sec.offsetTop - 80) current = sec.id;
-    });
+    sections.forEach(sec => { if (window.scrollY >= sec.offsetTop - 80) current = sec.id; });
     tabs.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#' + current));
   };
   window.addEventListener('scroll', setActive);
   setActive();
 
-  // Animacja pasków skilli, gdy wejdą w widok
-  const bars = document.querySelectorAll('.skill-fill');
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.width = e.target.dataset.w + '%';
-        io.unobserve(e.target);
-      }
+  // Fade-in sections on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealIo = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealIo.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => revealIo.observe(el));
+
+  // Ambient glow follows the mouse across the whole page
+  const glow = document.getElementById('cursor-glow');
+  window.addEventListener('mousemove', (e) => {
+    glow.style.setProperty('--gx', e.clientX + 'px');
+    glow.style.setProperty('--gy', e.clientY + 'px');
+  });
+
+  // Spotlight text: track mouse position relative to each element
+  document.querySelectorAll('.spotlight').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      el.style.setProperty('--mx', x + '%');
+      el.style.setProperty('--my', y + '%');
     });
-  }, { threshold: 0.4 });
-  bars.forEach(b => io.observe(b));
+  });
+
+  // Project category filter
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const commits = document.querySelectorAll('.commit');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      commits.forEach(c => {
+        c.classList.toggle('hidden', f !== 'all' && c.dataset.category !== f);
+      });
+    });
+  });
 </script>
 
 </body>
