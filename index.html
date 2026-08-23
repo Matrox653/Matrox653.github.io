@@ -660,7 +660,9 @@
         x: padL + p.x * plotW,
         y: padT + (1 - p.k / maxVal) * plotH
       }));
-      const linePath = smoothPath(pts);
+      const linePath = s.smooth === false
+        ? pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ' ' + p.y.toFixed(1)).join(' ')
+        : smoothPath(pts);
 
       if (opts.gradientId && s.fill) {
         const areaPath = linePath + ` L ${pts[pts.length - 1].x.toFixed(1)} ${padT + plotH} L ${pts[0].x.toFixed(1)} ${padT + plotH} Z`;
@@ -786,7 +788,7 @@
         { x: Math.min(1, v.peakX + spread), k: 0.6 },
         { x: 1, k: 0.3 }
       ];
-      return { color: v.color, fill: false, points: pts, title: v.title };
+      return { color: v.color, fill: false, smooth: false, points: pts, title: v.title };
     });
 
     drawLineChart(
