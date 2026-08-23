@@ -184,7 +184,7 @@
   .chart-hint { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
 
   .trend-svg { width: 100%; height: auto; display: block; overflow: visible; }
-  .trend-dot { stroke: var(--bg-elevated); stroke-width: 2; cursor: pointer; transition: r .15s ease; }
+  .trend-dot { stroke: var(--bg-elevated); stroke-width: 2; cursor: pointer; transition: r .25s cubic-bezier(.2,.8,.2,1); }
   .trend-dot:hover, .trend-dot.active { r: 6; }
   .trend-hit { fill: transparent; cursor: pointer; }
   .axis-label { font-family: var(--mono); font-size: 9.5px; fill: var(--ink-faint); }
@@ -192,15 +192,11 @@
   .chart-tooltip {
     position: absolute; pointer-events: none; background: var(--bg); border: 1px solid var(--accent-add);
     border-radius: 8px; padding: 8px 12px; font-family: var(--mono); font-size: 11.5px; color: var(--ink);
-    opacity: 0; transform: translate(-50%, -110%); transition: opacity .15s ease; white-space: nowrap; z-index: 10;
+    opacity: 0; transform: translate(-50%, -110%); transition: opacity .25s cubic-bezier(.2,.8,.2,1), left .2s ease, top .2s ease; white-space: nowrap; z-index: 10;
     box-shadow: 0 8px 24px -8px rgba(0,0,0,0.5);
   }
   .chart-tooltip.show { opacity: 1; }
   .chart-tooltip b { color: var(--accent-add); }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
-  .legend-item { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: var(--ink-dim); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
 
   .mini-stats { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed var(--panel-border); }
   .mini-stat b { display: block; font-family: var(--mono); font-size: 16px; color: var(--ink); }
@@ -287,7 +283,7 @@
     <div class="stat-cell"><div class="stat-num" data-target="1.66" data-suffix="M+" data-decimal="2">0</div><div class="stat-label">Combined views</div></div>
     <div class="stat-cell"><div class="stat-num" data-target="5.46" data-suffix="K+" data-decimal="2">0</div><div class="stat-label">Total watch hours</div></div>
     <div class="stat-cell"><div class="stat-num" data-target="1011" data-suffix="+" data-decimal="0">0</div><div class="stat-label">Total new subscribers</div></div>
-    <div class="stat-cell"><div class="stat-num" data-target="6" data-suffix="">0</div><div class="stat-label">Channels grown</div></div>
+    <div class="stat-cell"><div class="stat-num" data-target="2" data-suffix="">0</div><div class="stat-label">Channels grown</div></div>
   </div>
 
   <div class="quotes reveal">
@@ -398,7 +394,6 @@
         </div>
         <svg class="trend-svg" id="multiChart" viewBox="0 0 600 200" preserveAspectRatio="none"></svg>
         <div class="chart-tooltip" id="multiTooltip"></div>
-        <div class="legend" id="multiLegend"></div>
       </div>
     </div>
   </section>
@@ -624,6 +619,23 @@
      Shared helper — draws an interactive line/area chart into an <svg>.
      series: [{ label, color, points: [{x0to1, k, tooltip}] }]
   ===================================================================== */
+  function smoothPath(pts) {
+    if (pts.length < 3) return pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ' ' + p.y.toFixed(1)).join(' ');
+    let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)} `;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[i + 2] || p2;
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+      d += `C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)} `;
+    }
+    return d.trim();
+  }
+
   function drawLineChart(svgEl, tooltipEl, series, opts) {
     opts = opts || {};
     const W = 600, H = 200, padL = 10, padR = 10, padT = 14, padB = 24;
@@ -644,11 +656,11 @@
 
     series.forEach((s) => {
       const pts = s.points.map(p => ({
+        ...p,
         x: padL + p.x * plotW,
-        y: padT + (1 - p.k / maxVal) * plotH,
-        ...p
+        y: padT + (1 - p.k / maxVal) * plotH
       }));
-      const linePath = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ' ' + p.y.toFixed(1)).join(' ');
+      const linePath = smoothPath(pts);
 
       if (opts.gradientId && s.fill) {
         const areaPath = linePath + ` L ${pts[pts.length - 1].x.toFixed(1)} ${padT + plotH} L ${pts[0].x.toFixed(1)} ${padT + plotH} Z`;
@@ -670,7 +682,7 @@
       pts.forEach(p => {
         if (!p.tooltip) return;
         const hit = document.createElementNS(ns, 'circle');
-        hit.setAttribute('cx', p.x); hit.setAttribute('cy', p.y); hit.setAttribute('r', 12);
+        hit.setAttribute('cx', p.x); hit.setAttribute('cy', p.y); hit.setAttribute('r', 18);
         hit.setAttribute('class', 'trend-hit');
         const dot = document.createElementNS(ns, 'circle');
         dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); dot.setAttribute('r', 3.5);
@@ -710,20 +722,22 @@
   }
 
   /* =====================================================================
-     CHART 1 — Channel #1 daily views (28 days). Approximates the shape
-     from the channel's analytics screenshot: mostly flat with a strong
-     peak around Aug 1–2 and a value near 17,499 around Aug 12. Swap in
-     your exact daily numbers whenever you have them.
+     CHART 1 — Channel #1 daily views (28 days). Matches the shape from
+     the updated analytics screenshot: a first peak around Jul 31, a dip
+     through early/mid August, then a stronger climb into a peak near
+     Aug 21–22 (136,839 views on Aug 21). Swap in your exact daily
+     numbers whenever you have them.
   ===================================================================== */
   (function () {
     const raw = [
-      { d: 'Jul 19', k: 3 }, { d: 'Jul 20', k: 4 }, { d: 'Jul 21', k: 5 },
-      { d: 'Jul 22', k: 6 }, { d: 'Jul 24', k: 8 }, { d: 'Jul 25', k: 7 },
-      { d: 'Jul 26', k: 6 }, { d: 'Jul 28', k: 9 }, { d: 'Jul 30', k: 14 },
-      { d: 'Aug 1', k: 60 }, { d: 'Aug 2', k: 108 }, { d: 'Aug 3', k: 42 },
-      { d: 'Aug 4', k: 22 }, { d: 'Aug 5', k: 44 }, { d: 'Aug 6', k: 30 },
-      { d: 'Aug 7', k: 20 }, { d: 'Aug 9', k: 52 }, { d: 'Aug 10', k: 20 },
-      { d: 'Aug 11', k: 12 }, { d: 'Aug 12', k: 17.5 }
+      { d: 'Jul 26', k: 5 }, { d: 'Jul 27', k: 6 }, { d: 'Jul 28', k: 8 },
+      { d: 'Jul 29', k: 15 }, { d: 'Jul 30', k: 60 }, { d: 'Jul 31', k: 140 },
+      { d: 'Aug 1', k: 90 }, { d: 'Aug 2', k: 55 }, { d: 'Aug 3', k: 45 },
+      { d: 'Aug 4', k: 50 }, { d: 'Aug 5', k: 70 }, { d: 'Aug 6', k: 40 },
+      { d: 'Aug 7', k: 20 }, { d: 'Aug 8', k: 12 }, { d: 'Aug 9', k: 8 },
+      { d: 'Aug 11', k: 10 }, { d: 'Aug 13', k: 12 }, { d: 'Aug 15', k: 15 },
+      { d: 'Aug 17', k: 20 }, { d: 'Aug 18', k: 45 }, { d: 'Aug 19', k: 70 },
+      { d: 'Aug 20', k: 95 }, { d: 'Aug 21', k: 136.839 }, { d: 'Aug 22', k: 150 }
     ];
     const points = raw.map((p, i) => ({
       x: i / (raw.length - 1), k: p.k,
@@ -736,9 +750,13 @@
       {
         gradientId: 'areaGrad1', gradientColor: '#ffcf3f',
         axisLabels: [
-          { x: 0, text: 'Jul 19', anchor: 'start' },
-          { x: 0.47, text: 'Aug 1' },
-          { x: 1, text: 'Aug 12', anchor: 'end' }
+          { x: 0, text: 'Jul 26', anchor: 'start' },
+          { x: 0.22, text: 'Jul 31' },
+          { x: 0.4, text: 'Aug 4' },
+          { x: 0.6, text: 'Aug 9' },
+          { x: 0.78, text: 'Aug 13' },
+          { x: 0.91, text: 'Aug 18' },
+          { x: 1, text: 'Aug 22', anchor: 'end' }
         ]
       }
     );
@@ -783,14 +801,6 @@
         ]
       }
     );
-
-    const legend = document.getElementById('multiLegend');
-    videos.forEach(v => {
-      const item = document.createElement('div');
-      item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-dot" style="background:${v.color}"></span>${v.title}`;
-      legend.appendChild(item);
-    });
   })();
 </script>
 
