@@ -6,19 +6,19 @@
 <title>Mera Kebab – Kraków</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--text:#1c1c1c;--muted:#6b6b6b;--accent:#b8321f;--line:#ececec;--btn-text:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#fdfbf8;--text:#1c1c1c;--muted:#6b6b6b;--accent:#b8321f;--line:#ececec;--btn-text:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141414;--text:#f2f2f2;--muted:#9a9a9a;--accent:#e8664d;--line:#2a2a2a;--btn-text:#141414;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#141414;--text:#f2f2f2;--muted:#9a9a9a;--accent:#e8664d;--line:#2a2a2a;--btn-text:#141414;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
 body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 Inter,system-ui,sans-serif}
 .w{max-width:880px;margin:0 auto;padding:0 24px}
 nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
-nav b{font-weight:600;font-size:18px;letter-spacing:-.01em}
+nav b{font-weight:700;font-size:22px;letter-spacing:-.02em}nav b i{font-style:normal;color:var(--accent)}
 nav a{color:var(--text);text-decoration:none;margin-left:24px;font-size:15px}
 nav a:hover{color:var(--accent)}
 .hero{padding:96px 0 72px}
 .over{color:var(--accent);font-size:14px;font-weight:500;margin:0 0 16px}
-h1{font-size:clamp(40px,7vw,72px);line-height:1.04;font-weight:600;letter-spacing:-.03em;margin:0;max-width:11em}
+h1{font-size:clamp(64px,15vw,150px);line-height:.92;font-weight:700;letter-spacing:-.045em;margin:0}h1 i{font-style:normal;color:var(--accent)}
 .hero p.l{color:var(--muted);font-size:19px;max-width:30em;margin:22px 0 32px}
 .btn{display:inline-block;padding:13px 22px;border-radius:999px;font-weight:500;font-size:15px;text-decoration:none;margin:0 8px 8px 0;background:var(--text);color:var(--bg)}
 .btn.o{background:none;color:var(--text);border:1px solid var(--line)}
@@ -37,19 +37,32 @@ h3{font-size:13px;font-weight:500;color:var(--muted);text-transform:uppercase;le
 a.t{color:var(--accent);text-decoration:none}
 footer{padding:72px 0 40px;color:var(--muted);font-size:13px}
 .ph{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:40px}
-.ph img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;background:var(--line)}
+.ph img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;display:block;background:var(--line)}
 @media(max-width:560px){.ph{grid-template-columns:1fr 1fr}.ph img:last-child{grid-column:span 2;aspect-ratio:2/1}}
 .rv{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px;margin-top:28px}
 .rv p{margin:8px 0 10px}.rv small{color:var(--muted);font-size:14px}.st{color:var(--accent);letter-spacing:2px;font-size:14px}
+.tg{font-size:clamp(20px,3vw,26px);font-weight:500;margin:18px 0 0}
+.btn,.ph img,.r{transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease,color .25s ease,border-color .25s ease,padding .25s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.14);background:var(--accent);color:#fff}
+.btn.o:hover{background:none;color:var(--accent);border-color:var(--accent);box-shadow:none}
+.btn:active{transform:none}
+.btn:focus-visible,nav a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+nav a{position:relative}nav a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}nav a:hover::after{transform:scaleX(1)}
+.ph img:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+.r:hover{padding-left:8px}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero>*{animation:up .7s ease both}.hero>*:nth-child(2){animation-delay:.08s}.hero>*:nth-child(3){animation-delay:.16s}.hero>*:nth-child(4){animation-delay:.24s}.hero>*:nth-child(5){animation-delay:.32s}.hero>*:nth-child(6){animation-delay:.38s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:56px}.mg h3{margin-top:32px}
 </style>
 </head>
 <body>
 <div class="w">
-<nav><b>Mera Kebab</b><div><a href="#menu">Menu</a><a href="#opinie">Opinie</a><a href="#kontakt">Kontakt</a></div></nav>
+<nav><b>Mera <i>Kebab</i></b><div><a href="#menu">Menu</a><a href="#opinie">Opinie</a><a href="#kontakt">Kontakt</a></div></nav>
 
 <header class="hero">
 <p class="over">Kebab · Kraków</p>
-<h1>Kebab na cienkim cieście.</h1>
+<h1>Mera <i>Kebab</i></h1><p class="tg">Kebab na cienkim cieście.</p>
 <p class="l">Rollo, pita, bułka i talerz. Do tego frytki, falafel dla wegetarian i porcje, po których nie wstajesz od stołu głodny.</p>
 <a class="btn" href="https://www.pyszne.pl/menu/mera-kebab">Zamów online</a><a class="btn o" href="tel:+48453467011">+48 453 467 011</a>
 </header>
@@ -59,20 +72,9 @@ footer{padding:72px 0 40px;color:var(--muted);font-size:13px}
 
 <section id="menu">
 <h2>Menu</h2>
-<p class="sub">Ceny orientacyjne. W lokalu i w aplikacjach dostaw mogą się różnić.</p>
-<h3>Kebab</h3>
-<div class="r"><div><b>Rollo</b><span>Chlebek pita, mięso, sos</span></div><em>22 zł</em></div>
-<div class="r"><div><b>Mega rollo</b><span>Mięso, trzy rodzaje kapusty, ogórek, pomidor, cebula, ser, sos</span></div><em>39 zł</em></div>
-<div class="r"><div><b>Mega amerykański</b><span>Mięso, frytki, sos</span></div><em>42 zł</em></div>
-<div class="r"><div><b>Mega talerz</b></div><em>42 zł</em></div>
-<div class="r"><div><b>Mega falafel</b><span>Wersja wegetariańska</span></div><em>30 zł</em></div>
-<h3>Zestaw</h3>
-<div class="r"><div><b>Mera special set</b><span>Rollo kebab, frytki, pepsi</span></div><em>27 zł</em></div>
-<h3>Dodatki i deser</h3>
-<div class="r"><div><b>Frytki z serem</b></div><em>11 zł</em></div>
-<div class="r"><div><b>Masala frytki</b><span>Przyprawione po indyjsku</span></div><em>15 zł</em></div>
-<div class="r"><div><b>Baklawa</b></div><em>6 zł</em></div>
-<p class="more">W ofercie są też kebab w bułce, kapsalon i napoje. Pełne menu: <a class="t" href="https://www.pyszne.pl/menu/mera-kebab">Pyszne.pl</a>.</p>
+<p class="sub">Ceny z aplikacji dostaw (Wolt, Pyszne.pl). W lokalu mogą się nieco różnić.</p>
+<div class="mg"><div><h3>Kebab na cienkim cieście</h3><div class="r"><div><b>Tortilla kebab</b><span>Tortilla, mięso, surówka, sos</span></div><em>18 zł</em></div><div class="r"><div><b>Pita kebab</b><span>Pita, mięso, surówka, sos</span></div><em>19 zł</em></div><div class="r"><div><b>Rollo kebab</b><span>Chlebek, mięso, surówka, sos</span></div><em>22 zł</em></div><div class="r"><div><b>Rollo amerykańskie</b><span>Chlebek, mięso, frytki, ser, sos</span></div><em>22 zł</em></div></div><div><h3>Mega kebab XXL</h3><div class="r"><div><b>Mega rollo</b><span>Mięso, surówka, sos</span></div><em>43 zł</em></div><div class="r"><div><b>Mega rollo z serem</b><span>Mięso, surówka, ser, sos</span></div><em>46 zł</em></div><div class="r"><div><b>Mega rollo amerykańskie</b><span>Mięso, frytki, ser, sos</span></div><em>46 zł</em></div></div><div><h3>Talerze</h3><div class="r"><div><b>Talerz kebab</b><span>Mięso, frytki, surówka, sos</span></div><em>25 zł</em></div><div class="r"><div><b>Talerz kebab z serem</b><span>Mięso, frytki, surówka, ser, sos</span></div><em>30 zł</em></div></div><div><h3>Kapsalon</h3><div class="r"><div><b>Kapsalon kebab</b><span>Frytki, mięso, ser, sos</span></div><em>35 zł</em></div><div class="r"><div><b>Kapsalon amerykański</b><span>Frytki, mięso, ser, sos</span></div><em>38 zł</em></div></div><div><h3>Boxy</h3><div class="r"><div><b>Box klasyczny</b><span>Surówka, mięso, sos</span></div><em>25 zł</em></div><div class="r"><div><b>Box amerykański</b><span>Frytki, mięso, sos</span></div><em>25 zł</em></div></div><div><h3>Wegetariańskie</h3><div class="r"><div><b>Wege tortilla</b></div><em>16 zł</em></div><div class="r"><div><b>Wege pita</b></div><em>17 zł</em></div><div class="r"><div><b>Wege rollo</b></div><em>18 zł</em></div><div class="r"><div><b>Wege bułka</b><span>Frytki, ser, sos</span></div><em>22 zł</em></div></div><div><h3>Frytki i napoje</h3><div class="r"><div><b>Frytki</b><span>Opcja do wyboru</span></div><em>14 zł</em></div><div class="r"><div><b>Woda gazowana lub niegazowana 0,5 l</b></div><em>5 zł</em></div><div class="r"><div><b>Pepsi 0,5 l</b></div><em>9 zł</em></div></div><div><h3>Dodatkowo na Pyszne.pl</h3><div class="r"><div><b>Mega falafel</b></div><em>30 zł</em></div><div class="r"><div><b>Mera special set</b><span>Rollo kebab, frytki, pepsi</span></div><em>27 zł</em></div><div class="r"><div><b>Frytki z serem</b></div><em>11 zł</em></div><div class="r"><div><b>Masala frytki</b><span>Przyprawione po indyjsku</span></div><em>15 zł</em></div><div class="r"><div><b>Baklawa</b></div><em>6 zł</em></div></div></div>
+<p class="more">Pełne menu i zamówienia: <a class="t" href="https://www.pyszne.pl/menu/mera-kebab">Pyszne.pl</a> · <a class="t" href="https://wolt.com/en/pol/krakow/restaurant/mera-kebab">Wolt</a>.</p>
 </section>
 
 <section id="opinie">
